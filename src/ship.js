@@ -1,17 +1,16 @@
 const Ship = (length) => {
   const rets = {
-    length,
-    cells: Array(10).fill(true),
+    cells: Array(length).fill(true),
     rotation: 'vertical',
-    hit() {
-      // Hit Code Here
+    hit(cellIndex) {
+      this.cells[cellIndex] = false;
     },
     isSunk() {
-      // Check if Ship is Sunken code here
+      return this.cells.every(cell => (cell == false));
     }
   };
 
   return rets;
-}
+};
 
 export default Ship;
