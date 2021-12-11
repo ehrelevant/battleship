@@ -1,19 +1,3 @@
-
-const Ship = (length) => {
-  const rets = {
-    length,
-    hit() {
-      // Hit Code Here
-    },
-    isSunk() {
-      // Check if Ship is Sunken code here
-
-    }
-  };
-
-  return rets;
-}
-
 const Cell = (pos) => {
   return{
     pos
