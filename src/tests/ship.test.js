@@ -3,10 +3,8 @@ import Ship from '../ship.js';
 test('Ship has cells equal to length', () => {
   const ship = Ship(4);
 
-  // toMatchObject() is used so that the object's functions are skipped
   expect(ship).toMatchObject({
-    cells: [true, true, true, true],
-    rotation: 'vertical',
+    cells: [true, true, true, true]
   });
 });
 
@@ -16,8 +14,7 @@ test('Hit() sets a ship cell to false', () => {
   ship.hit(2);
 
   expect(ship).toMatchObject({
-    cells: [false, true, false, true, true],
-    rotation: 'vertical',
+    cells: [false, true, false, true, true]
   });
 });
 
