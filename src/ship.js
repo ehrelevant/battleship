@@ -7,7 +7,7 @@ const Ship = (length, pos, orie) => {
     pos,
     orie,
     hit(cellIndex) {
-      this.cells[cellIndex] = false;
+      rets.cells[cellIndex] = false;
     },
     isSunk() {
       return rets.cells.every(cell => (cell == false));

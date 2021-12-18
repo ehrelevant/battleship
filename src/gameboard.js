@@ -9,6 +9,9 @@ const Cell = () => {
     assignShip(ship, index) {
       rets.ship = ship;
       rets.shipIndex = index;
+    },
+    hasShip() {
+      return rets.ship !== null;
     }
   };
 
@@ -17,7 +20,8 @@ const Cell = () => {
 
 const Gameboard = (size) => {
   const board = createBoardGrid(size);
-  const ships = []
+  const ships = [];
+  const missed = [];
 
   function createBoardGrid(size) {
     let grid = Array(size);
@@ -54,6 +58,14 @@ const Gameboard = (size) => {
     }
   }
 
+  function areAllShipsSunk() {
+    return rets.ships.map(ship => {
+      return ship.isSunk();
+    }).every(boolValue => {
+      return boolValue === true
+    });
+  }
+
   function getCell(pos) {
     return rets.board[pos.y][pos.x];
   }
@@ -61,12 +73,35 @@ const Gameboard = (size) => {
   const rets = {
     board,
     ships,
+    missed,
 
     setShip(length, pos, orie) {
       const ship = Ship(length, pos, orie);
       rets.ships.push(ship);
       assignShipCells(ship);
     },
+    recieveAttack(pos) {
+      const cell = getCell({
+        x: pos.x,
+        y: pos.y
+      });
+      if (cell.hasShip()) {
+        const ship = cell.ship;
+        const shipIndex = cell.shipIndex;
+        ship.hit(shipIndex);
+
+        if (ship.isSunk()) {
+          // Ship sunken code here
+
+          if (areAllShipsSunk()) {
+            // Gameover code/function call here
+          }
+        }
+      } else {
+        rets.missed.push(pos);
+      }
+      cell.isChecked = true;
+    }
   };
 
   return rets;
