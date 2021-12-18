@@ -1,10 +1,11 @@
-const Ship = (length, pos, orientation) => {
+const Ship = (length, pos, orie) => {
   const cells = Array(length).fill(true);
-  
+
   const rets = {
+    length,
     cells,
     pos,
-    orientation,
+    orie,
     hit(cellIndex) {
       this.cells[cellIndex] = false;
     },

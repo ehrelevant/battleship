@@ -32,7 +32,7 @@ test('Ship has a position and rotation', () => {
 
   expect(ship).toMatchObject({
     pos: {x: 3, y: 4},
-    orientation: 'vertical'
+    orie: 'vertical'
   });
 });
 
