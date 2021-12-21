@@ -101,6 +101,9 @@ const Gameboard = (size) => {
         rets.missed.push(pos);
       }
       cell.isChecked = true;
+    },
+    wasCellChecked(pos) {
+      return getCell(pos).isChecked === true;
     }
   };
 
