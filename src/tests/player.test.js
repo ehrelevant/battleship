@@ -26,9 +26,7 @@ test('Player can attack other players', () => {
 
   player.attackOpponent(computerAI, {x: 0, y: 0});
 
-  expect(computerAI.gameboard.board[0][0]).toMatchObject({
-    isChecked: true
-  });
+  expect(computerAI.gameboard.board[0][0].isChecked).toEqual(true);
 });
 
 test('AI attacks a random open cell of the opponent', () => {
@@ -44,4 +42,14 @@ test('AI attacks a random open cell of the opponent', () => {
   });
 
   expect(comparison).toEqual(true);
+});
+
+test('Player cannot attack previous cells', () => {
+  const player = Player('player');
+  const computerAI = Player('AI', true);
+
+  player.attackOpponent(computerAI, {x: 0, y: 0});
+  const result = player.attackOpponent(computerAI, {x: 0, y: 0});
+
+  expect(result).toEqual(false);
 });

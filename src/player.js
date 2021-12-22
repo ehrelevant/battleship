@@ -18,8 +18,10 @@ const Player = (name, isAI=false) => {
     }
   }
 
+  // Returns true if target position is a valid clell
+  // Returns false otherwise
   function attackOpponent(opponent, pos) {
-    if(opponent.gameboard.wasCellChecked) {
+    if(!opponent.gameboard.wasCellChecked(pos)) {
       opponent.gameboard.recieveAttack(pos);
       return true;
     }
