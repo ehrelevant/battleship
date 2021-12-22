@@ -1,4 +1,4 @@
-import Player from '../player.js';
+import Player from '../gameObjects/player.js';
 
 test('Player is created', () => {
   const player = Player('player');

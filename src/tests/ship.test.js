@@ -1,4 +1,4 @@
-import Ship from '../ship.js';
+import Ship from '../gameObjects/ship.js';
 
 test('Ship has cells equal to length', () => {
   const ship = Ship(4, {x: 0, y: 0}, 'horizontal');
