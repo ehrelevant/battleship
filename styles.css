@@ -1,5 +1,10 @@
 :root {
     --cell-size: 40px;
+    --board-size: 10;
+
+    --checked-tile-color: #83d19b;
+    --ship-tile-color: #666a92;
+    --ship-dead-color: #ff8383;
 }
 
 div {
@@ -23,16 +28,24 @@ div {
 }
 
 .board-grid {
-    display: flex;
-    flex-direction: column;
-}
-
-.board-row {
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: repeat(var(--board-size), var(--cell-size));
+    grid-template-rows: repeat(var(--board-size), var(--cell-size));
 }
 
 .board-cell {
     width: var(--cell-size);
     height: var(--cell-size);
+}
+
+.checked {
+    background-color: var(--checked-tile-color);
+}
+
+.live-ship-cell {
+    background-color: var(--ship-tile-color);
+}
+
+.dead-ship-cell {
+    background-color: var(--ship-dead-color);
 }
