@@ -1,51 +1,88 @@
+import { game } from "./index.js";
+
 const displayController = (() => {
-  const gamePanels = document.querySelectorAll('.game-panel');
-  const gameboards = document.querySelectorAll('.gameboard');
+  const displayGamePanels = document.querySelectorAll('.game-panel');
+  const displayGameboards = document.querySelectorAll('.gameboard');
 
-  function createBoards(size) {
-    gameboards.forEach(gameboard => {
-      const grid = elementBuilder.buildBoard(size);
-      gameboard.appendChild(grid);
+  const playerDisplayGameboard = displayGameboards[0];
+  const opponentDisplayGameboard = displayGameboards[1];
 
-      gameboard.addEventListener('mouseover', (evt) => {
-        const target = evt.target;
-        if(target.classList.contains('board-cell')) {
-          console.log(target);
-        }
-      }, true);
-    });
+  let selectedRotation = 'vertical';
+
+  function clearDisplayBoard(displayGameboard) {
+    displayGameboard.textContent = '';
+  }
+
+  function renderPlayerBoard(gameboard) {
+    const displayGameboard = playerDisplayGameboard;
+    clearDisplayBoard(displayGameboard);
+
+    const displayGrid = elementBuilder.buildPlayerBoard(gameboard);
+    if (!gameboard.areAllShipsPlaced()) {
+      displayGrid.addEventListener('click', (evt) => _addShip(evt, gameboard), true);
+    }
+    displayGameboard.appendChild(displayGrid);
+  }
+
+  function _addShip(evt, gameboard) {
+    const size = gameboard.sideLength;
+
+    const target = evt.target;
+    if (target.classList.contains('board-cell')) {
+      const gridCells = target.parentNode.children;
+      const targetIndex =  Array.from(gridCells).indexOf(target);
+
+      const targetRow = Math.floor(targetIndex / size);
+      const targetCol = targetIndex % size;
+
+      gameboard.setShip({x:targetCol, y:targetRow}, selectedRotation);
+
+      renderPlayerBoard(gameboard)
+      if(gameboard.areAllShipsPlaced()) {
+        game();
+      }
+    }
+  }
+
+  function renderOpponentBoard(gameboard) {
+    const displayGameboard = opponentDisplayGameboard;
+    const displayGrid = elementBuilder.buildPlayerBoard(gameboard);
+    displayGameboard.appendChild(displayGrid);
   }
 
   const rets = {
-    createBoards
+    renderPlayerBoard,
+    renderOpponentBoard
   };
 
   return rets;
 })();
 
 const elementBuilder = (() => {
-  function buildBoard(size) {
+  function buildPlayerBoard(gameboard) {
     const boardGrid = document.createElement('div');
     boardGrid.classList.add('board-grid');
 
-    for (let rowInd = 0; rowInd < size; rowInd++) {
-      const boardRow = document.createElement('div');
-      boardRow.classList.add('board-row');
-
-      for (let cellInd = 0; cellInd < size; cellInd++) {
+    for (let row of gameboard.board) {
+      for (let cell of row) {
         const boardCell = document.createElement('div');
         boardCell.classList.add('board-cell');
 
-        boardRow.appendChild(boardCell);
+        if (cell.hasShip()) {
+          boardCell.classList.add('live-ship-cell');
+        } else if (cell.isChecked) {
+          boardCell.classList.add('cell-checked');
+        }
+
+        boardGrid.appendChild(boardCell);
       }
-      boardGrid.appendChild(boardRow);
     }
 
     return boardGrid;
   }
 
   return {
-    buildBoard
+    buildPlayerBoard
   };
 })();
 

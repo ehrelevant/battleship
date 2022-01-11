@@ -1,4 +1,4 @@
-import Ship from './ship.js'
+import Ship from "./ship.js";
 
 const Cell = () => {
   const rets = {
@@ -12,18 +12,21 @@ const Cell = () => {
     },
     hasShip() {
       return rets.ship !== null;
-    }
+    },
   };
 
   return rets;
 };
 
 const Gameboard = (size) => {
-  const board = createBoardGrid(size);
+  const sideLength = size;
+  const board = _createBoardGrid(size);
   const ships = [];
   const missed = [];
 
-  function createBoardGrid(size) {
+  let nextShipLengths = [5, 4, 3, 3, 2];
+
+  function _createBoardGrid(size) {
     let grid = Array(size);
     for (let r = 0; r < size; r++) {
       grid[r] = Array(size);
@@ -40,30 +43,55 @@ const Gameboard = (size) => {
     const startPos = ship.pos;
     const orie = ship.orie;
 
-    for(let i = 0; i < length; i++) {
-      if (orie === 'horizontal') {
-        const cell = getCell({
-          x: startPos.x + i,
-          y: startPos.y
-        });
-        cell.assignShip(ship, i);
+    let toOccupyCells = [];
+
+    for (let i = 0; i < length; i++) {
+      let cell = undefined;
+      if (orie === "horizontal") {
+        if (startPos.x + i < sideLength) {
+          cell = getCell({
+            x: startPos.x + i,
+            y: startPos.y,
+          });
+        }
+      } else if (orie === "vertical") {
+        if (startPos.y + i < sideLength) {
+          cell = getCell({
+            x: startPos.x,
+            y: startPos.y + i,
+          });
+        }
       }
-      if (orie === 'vertical') {
-        const cell = getCell({
-          x: startPos.x,
-          y: startPos.y + i
-        });
-        cell.assignShip(ship, i);
-      }
+      toOccupyCells.push([cell, i]);
     }
+
+    const areLegalPlacements = toOccupyCells.every((cell) => {
+      if (cell[0] === undefined) {
+        return false;
+      }
+      if (cell[0].hasShip()) {
+        return false;
+      }
+      return true;
+    });
+
+    if (areLegalPlacements) {
+      toOccupyCells.forEach((cell) => {
+        cell[0].assignShip(ship, cell[1]);
+      });
+      return true;
+    }
+    return false;
   }
 
   function areAllShipsSunk() {
-    return rets.ships.map(ship => {
-      return ship.isSunk();
-    }).every(boolValue => {
-      return boolValue === true
-    });
+    return rets.ships
+      .map((ship) => {
+        return ship.isSunk();
+      })
+      .every((boolValue) => {
+        return boolValue === true;
+      });
   }
 
   function getCell(pos) {
@@ -71,19 +99,36 @@ const Gameboard = (size) => {
   }
 
   const rets = {
+    sideLength,
     board,
     ships,
     missed,
 
-    setShip(length, pos, orie) {
+    areAllShipsPlaced() {
+      return nextShipLengths.length <= 0;
+    },
+    setShip(pos, orie) {
+      const length = nextShipLengths[0];
       const ship = Ship(length, pos, orie);
-      rets.ships.push(ship);
-      assignShipCells(ship);
+      const result = assignShipCells(ship);
+      if (result) {
+        rets.ships.push(ship);
+        nextShipLengths.shift();
+      }
+    },
+    scrambleShips() {
+      while (!rets.areAllShipsPlaced()) {
+        const randOrie = (Math.floor(Math.random() * 2)) ? 'horizontal' : 'vertical';
+        const randX = Math.floor(Math.random() * sideLength);
+        const randY = Math.floor(Math.random() * sideLength);
+
+        rets.setShip({x: randX, y: randY}, randOrie);
+      }
     },
     recieveAttack(pos) {
       const cell = getCell({
         x: pos.x,
-        y: pos.y
+        y: pos.y,
       });
       if (cell.hasShip()) {
         const ship = cell.ship;
@@ -104,7 +149,7 @@ const Gameboard = (size) => {
     },
     wasCellChecked(pos) {
       return getCell(pos).isChecked === true;
-    }
+    },
   };
 
   return rets;
