@@ -130,6 +130,18 @@ function disableBoards(players) {
 }
 
 
+function toggleRotation() {
+  if (selectedRotation === 'horizontal') {
+    selectedRotation = 'vertical';
+  } else {
+    selectedRotation = 'horizontal';
+  }
+}
+
+const rotateBtn = document.getElementById('rotate_button');
+rotateBtn.addEventListener('click', toggleRotation)
+
+
 
 
 export default displayController;
