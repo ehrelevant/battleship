@@ -38,7 +38,7 @@ div {
     height: var(--cell-size);
 }
 
-.checked {
+.cell-checked {
     background-color: var(--checked-tile-color);
 }
 

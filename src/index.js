@@ -1,12 +1,12 @@
 import display from "./displayController";
 import Player from "./gameObjects/player";
-import Gameboard from "./gameObjects/gameboard";
+import { disableBoards } from "./displayController";
 
 let players = undefined;
 
 function start() {
-  const player = Player('One')
-  const computerAI = Player('CPU', true)
+  const player = Player('Player');
+  const computerAI = Player('CPU', true);
 
   players = [player, computerAI];
   computerSetup();
@@ -14,30 +14,78 @@ function start() {
 }
 
 function playerSetup() {
-  const playerGameboard = players[0].gameboard;
+  const player = players[0];
 
-  display.renderPlayerBoard(playerGameboard);
+  display.renderPlayerBoard(player);
 }
 
 function computerSetup() {
-  const opponentGameboard = players[1].gameboard;
+  const opponent = players[1];
 
-  opponentGameboard.scrambleShips()
-  display.renderOpponentBoard(opponentGameboard);
+  opponent.gameboard.scrambleShips()
+  display.renderOpponentBoard(opponent);
 }
 
+
 function game() {
-  let turn = 0;
-  const playerCount = players.length;
+  const opponent = players[1];
+  display.renderOpponentBoard(opponent);
+}
 
-  console.log('GAME STARTED');
+function gamePlayerTurn(evt) {
+  const player = players[0];
+  const opponent = players[1];
 
-  while(true) {
-    const currentPlayer = players[(turn % playerCount)];
-    break;
+  const gameboard = player.gameboard;
+  const size = gameboard.sideLength;
+
+  const target = evt.target;
+  if (target.classList.contains('board-cell')) {
+    const gridCells = target.parentNode.children;
+    const targetIndex =  Array.from(gridCells).indexOf(target);
+
+    const targetRow = Math.floor(targetIndex / size);
+    const targetCol = targetIndex % size;
+
+    let legalMove = false;
+    legalMove = player.attackOpponent(opponent, {x:targetCol, y:targetRow});
+    if (!legalMove) {
+      return false;
+    }
+
+    display.renderOpponentBoard(opponent);
+    gameOpponentTurn();
   }
+}
+
+function gameOpponentTurn() {
+  const player = players[0];
+  const opponent = players[1];
+
+  // Currently looping to infinity
+  opponent.attackRandomCell(player);
+  display.renderPlayerBoard(player);
+}
+
+function determineWinner() {
+  const player = players[0];
+  const opponent = players[1];
+
+  const playerGameboard = player.gameboard;
+
+  if (playerGameboard.areAllShipsSunk()) {
+    declareWinner(opponent);
+  } else {
+    declareWinner(player);
+  }
+
+  disableBoards(players);
+}
+
+function declareWinner(player) {
+  console.log(`${player.name} wins!`);
 }
 
 start();
 
-export {game};
+export { game, gamePlayerTurn, determineWinner };
