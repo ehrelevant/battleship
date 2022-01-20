@@ -2,9 +2,10 @@
     --cell-size: 40px;
     --board-size: 10;
 
-    --checked-tile-color: #83d19b;
-    --ship-tile-color: #666a92;
-    --ship-dead-color: #ff8383;
+    --highlighted-tile-color: #cbfbcb;
+    --checked-tile-color: #73d691;
+    --ship-tile-color: #93a3ad;
+    --ship-dead-color: #ff5c40;
 }
 
 div {
@@ -38,6 +39,7 @@ div {
     height: var(--cell-size);
 }
 
+
 .cell-checked {
     background-color: var(--checked-tile-color);
 }
@@ -48,4 +50,8 @@ div {
 
 .dead-ship-cell {
     background-color: var(--ship-dead-color);
+}
+
+.highlighted {
+    background-color: var(--highlighted-tile-color);
 }
