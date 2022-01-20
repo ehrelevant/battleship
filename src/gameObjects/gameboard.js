@@ -1,5 +1,5 @@
 import Ship from "./ship.js";
-import { determineWinner } from "../index.js";
+// import { determineWinner } from "../index.js";
 
 const Cell = () => {
   const rets = {
@@ -24,8 +24,6 @@ const Gameboard = (size) => {
   const board = _createBoardGrid(size);
   const ships = [];
   const missed = [];
-
-  let nextShipLengths = [5, 4, 3, 3, 2];
 
   function _createBoardGrid(size) {
     let grid = Array(size);
@@ -99,28 +97,26 @@ const Gameboard = (size) => {
     return rets.board[pos.y][pos.x];
   }
 
-
-  function areAllShipsPlaced() {
-    return nextShipLengths.length <= 0;
-  }
-
-  function setShip(pos, orie) {
-    const length = nextShipLengths[0];
+  function setShip(length, pos, orie) {
     const ship = Ship(length, pos, orie);
-    const result = _assignShipCells(ship);
-    if (result) {
+    const isSuccess = _assignShipCells(ship);
+    if (isSuccess) {
       rets.ships.push(ship);
-      nextShipLengths.shift();
     }
+    return isSuccess;
   }
 
-  function scrambleShips() {
-    while (!rets.areAllShipsPlaced()) {
+  function scrambleShips(shipLengths) {
+    let shipLengthsIndex = 0
+    while (shipLengthsIndex < shipLengths.length) {
       const randOrie = (Math.floor(Math.random() * 2)) ? 'horizontal' : 'vertical';
       const randX = Math.floor(Math.random() * sideLength);
       const randY = Math.floor(Math.random() * sideLength);
 
-      rets.setShip({x: randX, y: randY}, randOrie);
+      const isSuccess = rets.setShip(shipLengths[shipLengthsIndex], {x: randX, y: randY}, randOrie);
+      if(isSuccess) {
+        shipLengthsIndex++;
+      }
     }
   }
 
@@ -136,17 +132,14 @@ const Gameboard = (size) => {
 
       if (ship.isSunk()) {
         // Ship sunken code here
-        console.log("SHIP SUNK");
+        console.log("Ship Sunk");
       }
     } else {
       rets.missed.push(pos);
     }
     cell.isChecked = true;
 
-    if (areAllShipsSunk()) {
-      // Gameover code/function call here
-      determineWinner();
-    }
+    return areAllShipsSunk()
   }
 
   function wasCellChecked(pos) {
@@ -162,7 +155,6 @@ const Gameboard = (size) => {
     getCell,
     setShip,
     areAllShipsSunk,
-    areAllShipsPlaced,
     scrambleShips,
     recieveAttack,
     wasCellChecked,
