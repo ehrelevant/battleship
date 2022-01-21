@@ -2,12 +2,19 @@ import displayController from "./displayController";
 import gameController from "./gameController";
 
 const gameEvents = (() => {
-  const playerDisplayGrid = document.querySelector('#player .gameboard');
-  const opponentDisplayGrid = document.querySelector('#opponent .gameboard');
+  let playerDisplayGrid = document.querySelector('#player .gameboard');
+  let opponentDisplayGrid = document.querySelector('#opponent .gameboard');
+  const rotateBtn = document.querySelector('#rotate_button');
 
-  function attachAddShipEvents(humanPlayer, opponentPlayer, shipLength) {
-    playerDisplayGrid.addEventListener('mouseenter', (e) => _setShipHighlight(e, humanPlayer, shipLength, true), true);;
-    playerDisplayGrid.addEventListener('mouseleave', (e) => _setShipHighlight(e, humanPlayer, shipLength, false), true);;
+  let orie = 'horizontal';
+  let shipLengths = [5, 4, 3, 3, 2]
+
+  function attachAddShipEvents(humanPlayer, opponentPlayer) {
+    playerDisplayGrid.addEventListener('mouseenter', (e) => _setShipHighlight(e, humanPlayer, true), true);
+    playerDisplayGrid.addEventListener('mouseleave', (e) => _setShipHighlight(e, humanPlayer, false), true);
+    playerDisplayGrid.addEventListener('click', (e) => _addShipToGrid(e, humanPlayer, opponentPlayer), true);
+
+    rotateBtn.addEventListener('click', _rotateNextShip);
   }
 
   function attachAttackEvents(humanPlayer, opponentPlayer) {
@@ -17,20 +24,45 @@ const gameEvents = (() => {
   }
 
   function clearGridEvents() {
-    clearAllElementEvents(playerDisplayGrid);
-    clearAllElementEvents(opponentDisplayGrid);
+    _clearAllElementEvents(playerDisplayGrid);
+    _clearAllElementEvents(opponentDisplayGrid);
+
+    playerDisplayGrid = document.querySelector('#player .gameboard');
+    opponentDisplayGrid = document.querySelector('#opponent .gameboard');
   }
 
-  function clearAllElementEvents(element) {
+  function _clearAllElementEvents(element) {
     const oldElement = element;
     const clearedElement = oldElement.cloneNode(true);
     oldElement.parentNode.replaceChild(clearedElement, oldElement);
   }
 
 
-  function _setShipHighlight(e, player, length, highlighted) {
+  function _addShipToGrid(e, player, opponent) {
     const target = e.target;
     if (target.classList.contains('board-cell')) {
+      const playerGameboard = player.gameboard;
+      const targetPos = _getTargetPos(target, playerGameboard);
+
+      const isLegalPlacement = playerGameboard.setShip(shipLengths[0], targetPos, orie);
+
+      if(isLegalPlacement) {
+        gameController.completePlacementTurn(player, opponent, shipLengths[0]);
+        shipLengths.shift()
+        if(shipLengths.length <= 0) {
+          clearGridEvents(playerDisplayGrid);
+          gameController.beginAttackPhase(player, opponent);
+        }
+      }
+    }
+  }
+
+  function _setShipHighlight(e, player, highlighted) {
+    const target = e.target;
+
+    if (target.classList.contains('board-cell')) {
+      const length = shipLengths[0];
+
       const playerGameboard = player.gameboard;
 
       const size = playerGameboard.sideLength;
@@ -39,18 +71,19 @@ const gameEvents = (() => {
 
       let toHighlightCells = [];
       for(let i = 0; i < length; i++) {
-        const gridCellIndex = targetIndex + i;
-        toHighlightCells.push(gridCellList[gridCellIndex]);
-        if ((gridCellIndex % size) + 1 >= size) {
-          break;
+        if(orie === 'horizontal') {
+          const gridCellIndex = targetIndex + i;
+          toHighlightCells.push(gridCellList[gridCellIndex]);
+          if ((gridCellIndex % size) + 1 >= size) {
+            break;
+          }
+        } else {
+          const gridCellIndex = targetIndex + (i * size);
+          toHighlightCells.push(gridCellList[gridCellIndex]);
+          if (Math.floor(gridCellIndex / size) + 1 >= size) {
+            break;
+          }
         }
-        /*
-        const gridCellIndex = targetIndex + (i * size);
-        toHighlightCells.push(gridCellList[gridCellIndex]);
-        if (Math.floor(gridCellIndex / size) + 1 >= size) {
-          break;
-        }
-        */
       }
 
       toHighlightCells.forEach((cell) => {
@@ -104,6 +137,14 @@ const gameEvents = (() => {
       } else {
         target.classList.remove('highlighted');
       }
+    }
+  }
+
+  function _rotateNextShip() {
+    if (orie === 'horizontal') {
+      orie = 'vertical';
+    } else {
+      orie = 'horizontal';
     }
   }
 

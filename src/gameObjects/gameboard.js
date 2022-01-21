@@ -1,3 +1,4 @@
+import displayController from "../displayController.js";
 import Ship from "./ship.js";
 // import { determineWinner } from "../index.js";
 
@@ -64,6 +65,9 @@ const Gameboard = (size) => {
       toOccupyCells.push([cell, i]);
     }
 
+    // console.log(ship);
+    // console.log(toOccupyCells);
+
     const areLegalPlacements = toOccupyCells.every((cell) => {
       if (cell[0] === undefined) {
         return false;
@@ -106,16 +110,15 @@ const Gameboard = (size) => {
     return isSuccess;
   }
 
-  function scrambleShips(shipLengths) {
-    let shipLengthsIndex = 0
-    while (shipLengthsIndex < shipLengths.length) {
+  function placeShipRandomly(shipLength) {
+    while(true) {
       const randOrie = (Math.floor(Math.random() * 2)) ? 'horizontal' : 'vertical';
       const randX = Math.floor(Math.random() * sideLength);
       const randY = Math.floor(Math.random() * sideLength);
 
-      const isSuccess = rets.setShip(shipLengths[shipLengthsIndex], {x: randX, y: randY}, randOrie);
+      const isSuccess = rets.setShip(shipLength, {x: randX, y: randY}, randOrie);
       if(isSuccess) {
-        shipLengthsIndex++;
+        break;
       }
     }
   }
@@ -131,8 +134,7 @@ const Gameboard = (size) => {
       ship.hit(shipIndex);
 
       if (ship.isSunk()) {
-        // Ship sunken code here
-        console.log("Ship Sunk");
+        displayController.editOutputText(`${ship.length}-Cell Long Ship Sunk`)
       }
     } else {
       rets.missed.push(pos);
@@ -155,7 +157,7 @@ const Gameboard = (size) => {
     getCell,
     setShip,
     areAllShipsSunk,
-    scrambleShips,
+    placeShipRandomly,
     recieveAttack,
     wasCellChecked,
   };

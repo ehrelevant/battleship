@@ -3,8 +3,6 @@ import gameEvents from "./gameEvents";
 import Player from "./gameObjects/player";
 
 const gameController = (() => {
-  const shipLengths = [5, 4, 3, 3, 2];
-
   function setupGame() {
     const humanPlayer = Player('User');
     const computerPlayer = Player('Computer', true);
@@ -12,11 +10,11 @@ const gameController = (() => {
     displayController.renderPlayerGameboard(humanPlayer.gameboard);
     displayController.renderOpponentGameboard(computerPlayer.gameboard);
 
-    beginShipSetupPhase(humanPlayer, computerPlayer);
+    _beginShipSetupPhase(humanPlayer, computerPlayer);
   }
 
-  function beginShipSetupPhase(humanPlayer, computerPlayer) {
-    gameEvents.attachAddShipEvents(humanPlayer, computerPlayer, 5);
+  function _beginShipSetupPhase(humanPlayer, computerPlayer) {
+    gameEvents.attachAddShipEvents(humanPlayer, computerPlayer);
   }
 
   function beginAttackPhase(humanPlayer, computerPlayer) {
@@ -25,19 +23,25 @@ const gameController = (() => {
 
   function completeGameTurn(player, opponent) {
     opponent.attackRandomCell(player);
-    displayController.renderOpponentGameboard(opponent.gameboard);
     displayController.renderPlayerGameboard(player.gameboard);
+    displayController.renderOpponentGameboard(opponent.gameboard);
+  }
+
+  function completePlacementTurn(player, opponent, length) {
+    opponent.gameboard.placeShipRandomly(length);
+    displayController.renderPlayerGameboard(player.gameboard);
+    displayController.renderOpponentGameboard(opponent.gameboard);
   }
 
   function declareWinner(winningPlayer) {
-    gameEvents.clearGridEvents()
-    console.log(`${winningPlayer.name} wins!`);
+    gameEvents.clearGridEvents();
+    displayController.editOutputText(`All ships sunk, ${winningPlayer.name} wins!`)
   }
 
   const rets = {
     setupGame,
-    beginShipSetupPhase,
     beginAttackPhase,
+    completePlacementTurn,
     completeGameTurn,
     declareWinner,
   };
