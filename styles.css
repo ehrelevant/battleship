@@ -8,11 +8,18 @@
     --ship-dead-color: #ff5c40;
 }
 
-div {
-    border: 1px solid black;
+p, button {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 .content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.game-panels {
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
@@ -24,21 +31,36 @@ div {
     flex-direction: column;
 }
 
-.gameboard {
-
-}
-
 .board-grid {
+    border: 1px solid black;
+
     display: grid;
     grid-template-columns: repeat(var(--board-size), var(--cell-size));
     grid-template-rows: repeat(var(--board-size), var(--cell-size));
 }
 
+.rotate-button {
+    margin-top: 30px;
+    font-size: 1.5em;
+}
+
 .board-cell {
+    border: 1px solid black;
+
     width: var(--cell-size);
     height: var(--cell-size);
 }
 
+
+.output-text {
+    font-size: 2em;
+    height: 40px;
+}
+
+
+.highlighted {
+    background-color: var(--highlighted-tile-color);
+}
 
 .cell-checked {
     background-color: var(--checked-tile-color);
@@ -50,8 +72,4 @@ div {
 
 .dead-ship-cell {
     background-color: var(--ship-dead-color);
-}
-
-.highlighted {
-    background-color: var(--highlighted-tile-color);
 }
