@@ -8,4 +8,4 @@ While working on this project I...
 * Employed Test-Driven Design (TDD) to formulate modules and test logic
 * Learned to seperate javascript functionality across different modules
 
-[Live Demo](https://kindaexists.github.io/battleship/)
+[Live Demo](https://ehrelevant.github.io/battleship/)
